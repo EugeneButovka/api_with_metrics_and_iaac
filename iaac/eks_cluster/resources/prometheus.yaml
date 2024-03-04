@@ -1,0 +1,94 @@
+etcd: false
+kubeScheduler: false
+kubeControllerManager:
+  enabled: false
+kubeEtcd:
+  enabled: false
+serviceMonitorSelector:
+  matchLabels:
+    prometheus: devops
+commonLabels:
+  prometheus: devops
+
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp2
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 100Gi
+    additionalScrapeConfigs:
+      - job_name: 'jenkins'
+        metrics_path: /prometheus/
+        static_configs:
+          - targets: [jenkins.dev.mdp.medifastinc.com]
+  ingress:
+    enabled: true
+    hosts:
+      - prometheus.dev.mdp.medifastinc.com
+    paths:
+      - /*
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/healthcheck-path: /
+      alb.ingress.kubernetes.io/healthcheck-port: "9090"
+      alb.ingress.kubernetes.io/success-codes: "302"
+      alb.ingress.kubernetes.io/listen-ports: |
+        [{"HTTPS": 443}]
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/group.name: svc-ingress-int-dev
+
+# Define persistent storage for Grafana (PVC)
+grafana:
+  # Set password for Grafana admin user
+  adminPassword: MediafastAdminPassworddev!!!
+  ingress:
+    enabled: true
+    hosts: ["grafana.dev.mdp.medifastinc.com"]
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/healthcheck-path: /login
+      alb.ingress.kubernetes.io/healthcheck-port: "80"
+      alb.ingress.kubernetes.io/listen-ports: |
+        [{"HTTPS": 443}]
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/group.name: svc-ingress-int-dev
+# Define persistent storage for Alertmanager (PVC)
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          storageClassName: gp2
+          resources:
+            requests:
+              storage: 50Gi
+  ingress:
+    enabled: true
+    hosts: ["alertmanager.dev.mdp.medifastinc.com"]
+    paths:
+      - /*
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/healthcheck-path: /
+      alb.ingress.kubernetes.io/healthcheck-port: "9093"
+      alb.ingress.kubernetes.io/listen-ports: |
+        [{"HTTPS": 443}]
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/scheme: internal
+      alb.ingress.kubernetes.io/group.name: svc-ingress-int-dev
+
+# Change default node-exporter port
+prometheus-node-exporter:
+  service:
+    port: 30206
+    targetPort: 30206
