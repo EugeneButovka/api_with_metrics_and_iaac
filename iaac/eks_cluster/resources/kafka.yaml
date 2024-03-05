@@ -2293,7 +2293,9 @@ provisioning:
   ##     max.message.bytes: 64000
   ##     flush.messages: 1
   ##
-  topics: []
+  topics: [
+    - name: "api-log"
+  ]
   ## @param provisioning.nodeSelector Node labels for pod assignment
   ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   ##

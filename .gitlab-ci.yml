@@ -1,0 +1,60 @@
+image: gradle:latest
+
+variables:
+  # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
+  # https://docs.gradle.org/current/userguide/command_line_interface.html#sec:command_line_logging
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+cache:
+  key: "$CI_JOB_NAME"
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+stages:
+  - build
+  - test
+  - load_test
+  - docker
+  - deploy
+
+build:
+  stage: build
+  script:
+    - gradle --build-cache assemble
+  artifacts:
+    paths:
+      - build/libs/*.jar
+
+test:
+  stage: test
+  script:
+    - gradle --build-cache check
+
+load_test:
+  stage: load_test
+  script:
+    - /path/to/jmeter/bin/jmeter -n -t Api_load_tests_jmeter.jmx -l result.jtl
+
+docker:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t "$CI_REGISTRY_IMAGE" .
+    - docker push "$CI_REGISTRY_IMAGE"
+
+deploy:
+  stage: deploy
+  image: bitnami/kubectl
+  script:
+    - kubectl set image deployment api-app api-app=$CI_REGISTRY_IMAGE
+  environment:
+    name: production
+    url: http://production.example.com
+  when: manual
