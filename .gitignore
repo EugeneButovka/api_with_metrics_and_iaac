@@ -42,3 +42,9 @@ out/
 
 ### Jmeter ###
 jmeter.log
+
+### terraform ###
+iaac/eks_cluster/.terraform
+iaac/eks_cluster/.terraform.lock.hcl
+
+

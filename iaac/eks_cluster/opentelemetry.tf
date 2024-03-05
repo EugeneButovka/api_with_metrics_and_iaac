@@ -1,6 +1,4 @@
-
-
-resource "helm_release" "logging" {
+resource "helm_release" "opentelemetry" {
   name       = "main"
   repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   chart      = "opentelemetry-operator"

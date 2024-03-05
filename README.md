@@ -49,4 +49,22 @@ remove -n parameter in the command to use JMeter GUI.
       user_flow_exceptions_total{application="user-flow-api-service",exception="UserFlowInternalException",} 1.0
       ```
 
-### Misc
+### Infrastructure deploy
+1. Add env variables for AWS credentials
+```
+% export AWS_ACCESS_KEY_ID="anaccesskey"
+% export AWS_SECRET_ACCESS_KEY="asecretkey"
+```
+2. Go to **iaac/eks_cluster** folder
+3. To download terraform modules use console command
+```
+terraform init
+```
+4. To plan deployemnt use 
+```
+terraform plan
+```
+5. To deploy resuources use
+```
+terraform apply
+```

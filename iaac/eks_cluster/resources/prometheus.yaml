@@ -21,14 +21,15 @@ prometheus:
             requests:
               storage: 100Gi
     additionalScrapeConfigs:
-      - job_name: 'jenkins'
-        metrics_path: /prometheus/
+      - job_name: 'api_app'
+        metrics_path: actuator/prometheus/
+        scrapeInterval: 5s
         static_configs:
-          - targets: [jenkins.dev.mdp.medifastinc.com]
+          - targets: ['localhost:8080']
   ingress:
     enabled: true
     hosts:
-      - prometheus.dev.mdp.medifastinc.com
+      - example.com
     paths:
       - /*
     annotations:
@@ -46,10 +47,10 @@ prometheus:
 # Define persistent storage for Grafana (PVC)
 grafana:
   # Set password for Grafana admin user
-  adminPassword: MediafastAdminPassworddev!!!
+  adminPassword: admin!!!
   ingress:
     enabled: true
-    hosts: ["grafana.dev.mdp.medifastinc.com"]
+    hosts: ["grafana.example.com"]
     annotations:
       kubernetes.io/ingress.class: alb
       alb.ingress.kubernetes.io/backend-protocol: HTTP
@@ -73,7 +74,7 @@ alertmanager:
               storage: 50Gi
   ingress:
     enabled: true
-    hosts: ["alertmanager.dev.mdp.medifastinc.com"]
+    hosts: ["alertmanager.example.com"]
     paths:
       - /*
     annotations:
