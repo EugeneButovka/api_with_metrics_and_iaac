@@ -27,7 +27,7 @@ See 'Generate openapi docs' or swagger UI after running app locally at http://lo
 
 
 ### Load tests
-Run the app and use command line:
+Run the app and use command line from the root of the project:
 ```
 jmeter -n -t Api_load_tests_jmeter.jmx
 ```
@@ -48,6 +48,20 @@ remove -n parameter in the command to use JMeter GUI.
       # TYPE user_flow_exceptions_total counter
       user_flow_exceptions_total{application="user-flow-api-service",exception="UserFlowInternalException",} 1.0
       ```
+
+### Local docker build and run
+To build a docker image with the app (after it is build by gradle) use commands from the root of the project:
+```
+docker rmi api_with_metrics_and_iaac:latest
+docker build --tag api_with_metrics_and_iaac:latest .
+```
+
+To run docker image with the app mounted to http://localhost:8080 use commands:
+```
+docker stop api_with_metrics_and_iaac-container
+docker rm api_with_metrics_and_iaac-container
+docker run -d -p 8080:8080 --name api_with_metrics_and_iaac-container api_with_metrics_and_iaac:latest 
+```
 
 ### Infrastructure deploy
 1. Add env variables for AWS credentials
