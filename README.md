@@ -1,3 +1,6 @@
+### High level architecture reveiw
+See api_with_metrics_and_iaac_system_arch.pdf in the root of the project
+
 ### Local run instructions
 
 #### Run
